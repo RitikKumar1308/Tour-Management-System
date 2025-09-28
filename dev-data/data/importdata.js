@@ -21,6 +21,7 @@ mongoose.connect(DB,{
 
 
 const insertdata = async()=>{
+    console.log("here is in inserted data");
     const readable=fs.createReadStream(`${__dirname}/tours-simple.json`,'utf-8');
     readable.on("data",async(chunk)=>{
         const data=JSON.parse(chunk);
@@ -37,7 +38,8 @@ const deletedata=async()=>{
 }
 console.log(process.argv);
 if(process.argv[2]==="--deleteMany"){
-    deletedata()
+    console.log("deleting data....");   
+    deletedata();
 }
 else{
     insertdata()
