@@ -5,13 +5,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "nodemon server.js",
-    "start:prod": " cross-env NODE_ENV=production node server.js"
+    "start:prod": " cross-env NODE_ENV=production nodemon server.js",
+    "debug":" nodemon --inspect server.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "cross-env": "^10.0.0",
+    "dbg": "^2.0.1",
     "dotenv": "^17.2.2",
     "express": "^4.21.2",
     "mongoose": "^5.13.23",

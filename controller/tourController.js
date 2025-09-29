@@ -1,5 +1,7 @@
 const fs=require('fs'); 
 const tourModel=require('../model/toursModel');
+const appError = require('../utils/errorHandle');
+const catchAsync = require('../utils/catchAsync');  
 const { start } = require('repl');
 class ApiFeatures{
     constructor(query,querystr){
@@ -46,8 +48,13 @@ class ApiFeatures{
 
     }
 }
-exports. getAllTours= async(req,res,next)=>{
-    try{
+// const catchAsync =fn=>{
+//     return(req,res,next)=>{
+//         fn(req,res,next).catch(next);
+//     }
+// }
+exports. getAllTours= catchAsync (async(req,res,next)=>{
+    
         //filtering
         // let queryobj={...req.query};
         // const excludeFields=['limit','sort','page','fields'];
@@ -84,15 +91,9 @@ exports. getAllTours= async(req,res,next)=>{
         // const tours=await query;
         return res.status(200).json({status:"sucess",result:tours.length,data:{tours:tours}})
 
-    }
-    catch(err){
-        return res.status(400).json({status:"fail",message:err.message})
-    }
-   
-
-};
-exports. createTour= async(req,res,next)=>{
-    try{
+});
+exports. createTour= catchAsync(async(req,res,next)=>{
+    
          // const newTour =Object.assign({id:newId},req.body);
             // const newTour = new tourModel(req.body);
             // newTour.save().then(()=>{
@@ -101,37 +102,33 @@ exports. createTour= async(req,res,next)=>{
            const tour= await tourModel.create(req.body);
               return res.status(201).json({status:"success",data:{tour:tour}})
 
-        }catch(err){
-            return res.status(400).json({status:"fail",message:err})
-
-        }
         
-}
-exports. getTourById=async(req,res,next)=>{
-    try{
+        
+});
+exports. getTourById=catchAsync( async(req,res,next)=>{
+    
         const tour= await tourModel.findById(req.params.id);
+        console.log(tour);
         if(!tour){
-            return res.status(404).json({status:"fail",message:"Invalid Id"})
+            // return res.status(404).json({status:"fail",message:"Invalid Id"})
+            return next(new appError("invalid _id",404))
         }
         return res.status(200).json({status:"sucess",data:{tour:tour}});
-    }
-    catch(err){
-        return res.status(400).json({status:"fail",message:err.message})
-    }
+    
     
 
-}
-exports. updateTour=(req,res,next)=>{
+});
+exports. updateTour= catchAsync(async(req,res,next)=>{
    
    // return res.status(200).json({status:"sucess",data:"<data is updated >"})
-}
-exports. deleteTour=(req,res,next)=>{
+});
+exports. deleteTour= catchAsync(async(req,res,next)=>{
      
     //return res.status(204).json({status:"sucess",data:null})
-}
+});
 
-exports.tourStats=async (req,res,next)=>{
-    try{
+exports.tourStats= catchAsync(async(req,res,next)=>{
+    
         const stats = await tourModel.aggregate([
             { $match: { ratingsAverage: { $gte: 1 } } },
             {
@@ -158,13 +155,11 @@ exports.tourStats=async (req,res,next)=>{
         console.log(stats);
         return res.status(200).json({status:"success",data:{stats:stats}})
 
-    }catch(err){
-        return res.status(400).json({status:"fail",message:err.message})
-    }
-}
+    
+});
 
-exports.monthlyPlan = async(req,res,next)=>{
-    try{
+exports.monthlyPlan = catchAsync(async(req,res,next)=>{
+    
 
         const year =req.params.year*1;
         console.log(year)
@@ -198,8 +193,5 @@ exports.monthlyPlan = async(req,res,next)=>{
            
         ])
         return res.status(200).json({status:"sucess",data:{plan:plan}})
-    }
-    catch(err){
-        return res.status(400).json({status:"fail",message:err.message});
-    }
-}
+    
+});
