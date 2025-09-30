@@ -108,7 +108,7 @@ exports. createTour= catchAsync(async(req,res,next)=>{
 exports. getTourById=catchAsync( async(req,res,next)=>{
     
         const tour= await tourModel.findById(req.params.id);
-        console.log(tour);
+        console.log("here is tour",tour);
         if(!tour){
             // return res.status(404).json({status:"fail",message:"Invalid Id"})
             return next(new appError("invalid _id",404))
@@ -123,6 +123,11 @@ exports. updateTour= catchAsync(async(req,res,next)=>{
    // return res.status(200).json({status:"sucess",data:"<data is updated >"})
 });
 exports. deleteTour= catchAsync(async(req,res,next)=>{
+        const tour= await tourModel.findByIdAndDelete(req.params.id);
+        if(!tour){
+            return next(new appError("invalid _id",404))
+        }   
+        return res.status(204).json({status:"sucess",data:null})
      
     //return res.status(204).json({status:"sucess",data:null})
 });

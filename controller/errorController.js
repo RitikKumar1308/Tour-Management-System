@@ -45,6 +45,9 @@ handledublicacyError=(err)=>{
     return new AppError(message,400);
 
 }
+const handleJwtError=(err)=>{
+    return next(new AppError("invalid token please log in again",401))
+}
 exports.Error =(err,req,res,next)=>{
     console.log("here is the value",err.operational)
     err.statuscode=err.statuscode || 500;
@@ -68,6 +71,9 @@ exports.Error =(err,req,res,next)=>{
         } 
         if(err.name==="ValidationError"){
             err=validationError(err);
+        }
+        if(err.name==="JsonWebTokenError"){
+            err =handleJwtError(err);
         }
         productionErrors(err,res);
 
