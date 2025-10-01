@@ -41,8 +41,23 @@ const userSchema = new mongoose.Schema({
             },
             message:"Passwrod and confirmPassword are not same."
         }
+    },
+    resetTokenExpires:{
+        type:Date
+    },
+    resetPasswordToken:{
+        type:String,
+    },
+    passwordChangedAt:{
+        type:Date
+    }   ,
+    active:{
+        type:Boolean,
+        default:true,
+        select:false    
     }
 });
+
 userSchema.pre('save',async function(next){
     if(!this.isModified("password")){
         return next();
@@ -51,6 +66,16 @@ userSchema.pre('save',async function(next){
     console.log("before hash",this.confirmPassword)
     this.password =await bcrypt.hash(this.password,12);
     next();
+})
+userSchema.pre('save',function(next){
+    if(!this.isModified("password") || this.isNew){
+        return next();
+    }   
+    this.passwordChangedAt=Date.now()-1000;
+    next();
+})
+userSchema.pre('/^find/',function(next){
+    this.find({ative:{$ne:true}})
 })
 userSchema.methods.comparepassword=async function(candidatePassword,userpassword){
     return await bcrypt.compare(candidatePassword,userpassword);
@@ -71,6 +96,7 @@ userSchema.methods.createPasswordResetToken=  async function(){
     console.log({resetToken},this.resetPasswordToken);
     return resetToken;
 }
+
 const User = mongoose.model("User",userSchema);
 
 module.exports=User;

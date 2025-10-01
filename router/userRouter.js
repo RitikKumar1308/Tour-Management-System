@@ -6,7 +6,9 @@ const authController =require('../controller/authController');
 router.post('/signup',authController.signup);
 router.post('/login',authController.login)
 router.post('/forgotPassword',authController.forgetPassword);
-// router.patch('/resetpassword/:token',authController.resetPassword)
+router.patch('/resetpassword/:token',authController.resetPassword);
+router.post('/updatePassword',authController.protect,authController.updatePassword);
+router.post('/updateme',authController.protect,authController.updateMe);
 
 router.route('/')
 .get(userController.getAllUsers)
