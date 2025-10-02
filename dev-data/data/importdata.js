@@ -22,7 +22,7 @@ mongoose.connect(DB,{
 
 const insertdata = async()=>{
     console.log("here is in inserted data");
-    const readable=fs.createReadStream(`${__dirname}/tours-simple.json`,'utf-8');
+    const readable=fs.createReadStream(`${__dirname}/tours.json`,'utf-8');
     readable.on("data",async(chunk)=>{
         const data=JSON.parse(chunk);
         const all=await tourModel.create(data);

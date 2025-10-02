@@ -64,9 +64,9 @@ exports. getAllTours= catchAsync (async(req,res,next)=>{
         // queryobj=JSON.parse(querystr.replace(/\b gte|gt|lte|lt \b/g,match=>`$${match}`));
 
 
-        const features = new ApiFeatures(tourModel.find(),req.query).filter().sort().fields().pages();  
-            const tours=await features.query;
-        // const tours=await tourModel.find();
+        // const features = new ApiFeatures(tourModel.find(),req.query).filter().sort().fields().pages();  
+            // const tours=await features.query;
+        const tours=await tourModel.find();
        
         // const query = tourModel.find(queryobj);
         //  //sorting
@@ -106,8 +106,12 @@ exports. createTour= catchAsync(async(req,res,next)=>{
         
 });
 exports. getTourById=catchAsync( async(req,res,next)=>{
+    console.log("here is id",req.params.id);
     
-        const tour= await tourModel.findById(req.params.id);
+        const tour= await tourModel.findById({_id:req.params.id}).populate({
+            path:'guides',
+            select:"-__v -_id"
+        })
         console.log("here is tour",tour);
         if(!tour){
             // return res.status(404).json({status:"fail",message:"Invalid Id"})

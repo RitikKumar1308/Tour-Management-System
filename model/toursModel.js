@@ -1,5 +1,6 @@
 const slugify = require('slugify');
 const mongoose = require('mongoose');
+const User= require('./userModel')
 const tourSchema = new mongoose.Schema({
     name:{
         type:String,
@@ -64,10 +65,39 @@ const tourSchema = new mongoose.Schema({
         type:String,
         required:[true,"difficulty should be required"],
         enum:{
-            values:["easy","medium","hard"],
-            message:"difficluty should be easy,medium,hard"
+            values:["easy","medium","difficult"],
+            message:"difficulty should be easy,medium,difficult"
         }
     },
+    startLocation:{
+        type:{
+            type:String,
+            default:"Point",
+            enum:["Point"],       
+        },
+        coordinates:[Number],
+        address:String,
+        description:String
+
+    },
+    guides:[{
+        type:mongoose.Schema.ObjectId,
+        ref:'User'
+    }],
+    locations:[
+        {
+            type:{
+                type:String,
+                default:"Point",
+                enum:["Point"]
+
+            },
+            coordinates:[Number],
+            address:String,
+            description:String,
+            day:Number
+        }
+    ],
     createdAt:{
         type:Date,
         default:Date.now(),
@@ -91,6 +121,13 @@ tourSchema.pre('save', async function(next){
     // console.log("will save document");
     next();
 })
+
+//.....this is for embbeding
+
+// tourSchema.pre('save',async function(next){
+//     this.guides=await Promise.all(this.guides.map(async id=>await User.findById(id) ));
+//     next();
+// })
 tourSchema.post('save',function(doc,next){
     console.log("docs middleware",doc);
     // const val=

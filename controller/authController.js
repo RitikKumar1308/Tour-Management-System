@@ -9,6 +9,24 @@ const signingToken =id=>{
     return jwt.sign({id},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRES_IN});
 
 }
+const createSendToken=((user,statuscode,res)=>{
+    const token= signingToken(user._id);
+
+    res.cookie("jwt",token,{
+        httpOnly:true,
+        expires:new Date(Date.now()+process.env.COOKIE_EXPIRES_IN*24*60*60*1000),
+        secure:process.env.NODE_ENV==='production'?true:false
+    })
+    user.password=undefined;
+    user.active=undefined;  
+    return res.status(statuscode).send({
+        status:"success",
+        token:token,
+        data:{
+            user:user
+        }
+    })
+})
 exports.signup =catchAsync(async(req,res,next)=>{
     const User={
         name:req.body.name,
@@ -17,16 +35,9 @@ exports.signup =catchAsync(async(req,res,next)=>{
         confirmPassword:req.body.confirmPassword    
     };
     const newUser =await usermodel.create(User);
-     const token = signingToken(newUser._id);
+    //  const token = signingToken(newUser._id);
 
-    return res.status(201).send({
-        status:"success",
-        data:{
-            user:newUser,
-           
-        },
-         token:token
-    })
+    createSendToken(newUser,201,res);
 })
 exports.login =catchAsync(async(req,res,next)=>{
     const {email,password}=req.body;
